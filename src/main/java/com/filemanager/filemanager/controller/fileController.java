@@ -26,7 +26,7 @@ public class fileController {
     private final FileService fileService;
 
     @Autowired
-    private final UserService userService
+    private final UserService userService;
 
     public fileController(AuthenticationManager authenticationManager, FileService fileService, UserService userService) {
         this.authenticationManager = authenticationManager;
