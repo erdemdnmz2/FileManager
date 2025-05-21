@@ -13,6 +13,8 @@ public class File {
     @Lob
     private byte[] fileData;
 
+    private String fileType;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -37,7 +39,8 @@ public class File {
         return fileData;
     }
 
-    public void setFileData(byte[] fileData) {
+
+    public void setFileData( byte[] fileData ) {
         this.fileData = fileData;
     }
 
@@ -47,5 +50,13 @@ public class File {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
     }
 }

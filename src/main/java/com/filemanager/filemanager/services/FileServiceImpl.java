@@ -1,5 +1,6 @@
 package com.filemanager.filemanager.services;
 
+import com.filemanager.filemanager.dtos.FileDto;
 import com.filemanager.filemanager.repository.FileRepository;
 import com.filemanager.filemanager.model.File;
 import org.springframework.stereotype.Service;
@@ -30,4 +31,21 @@ public class FileServiceImpl implements FileService {
         return fileRepository.findById(userId);
     }
 
+    @Override
+    public Optional<File> findById(int fileId) {
+        return fileRepository.findById(fileId);
+    }
+
+    @Override
+    public List<FileDto> getFileInfo(int userId) {
+        List<File> files = fileRepository.findAllByUserId(userId);
+        return files.stream()
+                .map(file -> new FileDto(file.getId(), file.getFileName(), file.getFileType()))
+                .toList();
+    }
+
+    @Override
+    public void deleteById(int fileId) {
+        fileRepository.deleteById(fileId);
+    }
 }

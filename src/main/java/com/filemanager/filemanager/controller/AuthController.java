@@ -21,14 +21,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-    @Autowired
+
     private final AuthenticationManager authenticationManager;
 
-    @Autowired
     private final JwtTokenProvider jwtTokenProvider;
 
     @Autowired
     private UserService userService;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
