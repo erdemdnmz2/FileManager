@@ -52,7 +52,7 @@
                         html += `<tr>
                   <th scope="row">${idx + 1}</th>
                   <td>${file.fileName}</td>
-                  <td><a href="/file/getfile/${file.id}?view=true" class="btn btn-info" target="_blank">Görüntüle</a></td>
+                  <td><a href="/file/getfile/view?id=${file.id}" class="btn btn-info" target="_blank">Görüntüle</a></td>
                   <td><button class="btn btn-success" onclick="downloadFile(${file.id}, '${file.fileName}')">İndir</button></td>
                   <td><button class="btn btn-danger" onclick="deleteFile(${file.id})">Sil</button></td>
                 </tr>`;

@@ -6,8 +6,9 @@ import com.filemanager.filemanager.model.User;
 import com.filemanager.filemanager.register.RegisterRequest;
 import com.filemanager.filemanager.security.JwtTokenProvider;
 import com.filemanager.filemanager.services.UserService;
-import com.filemanager.filemanager.services.UserServiceImpl;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -38,7 +39,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -46,6 +47,15 @@ public class AuthController {
                             loginRequest.getPassword())
             );
             String token = jwtTokenProvider.generateToken(authentication);
+
+            ResponseCookie cookie = ResponseCookie.from("token", token)
+                    .httpOnly(true)
+                    .path("/")
+                    .maxAge(3600)
+                    .sameSite("Strict")
+                    .build();
+            response.addHeader("Set-Cookie", cookie.toString());
+
             return ResponseEntity.ok(new LoginResponse(token));
         }
         catch (Exception e) {
@@ -54,7 +64,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest, HttpServletResponse response) {
         User user = new User();
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         user.setUsername(registerRequest.getUsername());
@@ -64,6 +74,14 @@ public class AuthController {
                 user.getUsername(), user.getPassword()
         );
         String token = jwtTokenProvider.generateToken(authentication);
+
+        ResponseCookie cookie = ResponseCookie.from("token", token)
+                .httpOnly(true)
+                .path("/")
+                .maxAge(60)
+                .sameSite("Strict")
+                .build();
+        response.addHeader("Set-Cookie", cookie.toString());
         return ResponseEntity.ok(new LoginResponse(token));
     }
 }

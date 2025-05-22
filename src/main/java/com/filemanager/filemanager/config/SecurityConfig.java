@@ -33,8 +33,8 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/register", "/auth/login", "/login", "/register", "/home").permitAll()
-                        .requestMatchers("/file/upload", "/file/files", "file/delete/**", "file/getfile/**").authenticated()
+                        .requestMatchers("/auth/register", "/auth/login", "/login", "/register").permitAll()
+                        .requestMatchers("/file/upload", "/file/files", "file/delete/**", "/file/getfile/**", "/home").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

@@ -80,7 +80,10 @@ public class FileController {
     }
 
     @GetMapping("/getfile/{fileId}")
-    public ResponseEntity<byte[]> download(@PathVariable int fileId, Authentication authentication) {
+    public ResponseEntity<byte[]> download(
+            @PathVariable int fileId,
+            @RequestParam(value = "view", required = false, defaultValue = "false") boolean view,
+            Authentication authentication) {
         try {
             String username = authentication.getName();
             User user = userService.findByUsername(username);
@@ -97,8 +100,9 @@ public class FileController {
                 return ResponseEntity.status(403).body(null);
             }
 
+            String dispositionType = view ? "inline" : "attachment";
             return ResponseEntity.ok()
-                    .header("Content-Disposition", "attachment; filename=\"" + file.getFileName() + "\"")
+                    .header("Content-Disposition", dispositionType + "; filename=\"" + file.getFileName() + "\"")
                     .contentType(MediaType.parseMediaType(file.getFileType()))
                     .body(file.getFileData());
         } catch(Exception e) {
