@@ -40,7 +40,9 @@
         const resultDiv = document.getElementById('result');
         if (response.ok) {
             const data = await response.json();
-            resultDiv.innerHTML = '<span class="text-success">Giriş başarılı! Token: ' + data.token + '</span>';
+            localStorage.setItem('token', data.token); // Token'ı kaydet
+            resultDiv.innerHTML = '<span class="text-success">Giriş başarılı!</span>';
+            window.location.href = '/home';
         } else {
             const error = await response.text();
             resultDiv.innerHTML = '<span class="text-danger">Hata: ' + error + '</span>';

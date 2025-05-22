@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dosya Yöneticisi</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body style="text-align: center; padding-top: 60px;">
+<h2>Dosya Yöneticisi</h2>
+<hr style="width: 80%; margin-left: 10%;">
+<form id="uploadForm" style="width: 60%; margin-left: 20%; text-align: left; padding-top: 3%; padding-bottom: 3%;">
+    <div class="mb-3">
+        <label for="formFile" class="form-label">Dosya Seç</label>
+        <input class="form-control" type="file" id="formFile" name="file">
+    </div>
+    <button type="submit" class="btn btn-primary">Yükle</button>
+    <a href="/auth/logout" class="btn btn-danger">Çıkış Yap</a>
+</form>
+<div id="fileTableContainer"></div>
+
+<script>
+    // LocalStorage'dan token'ı al
+    function getToken() {
+        return localStorage.getItem('token');
+    }
+
+    // Dosya listesini çek ve tabloyu oluştur
+    function fetchFiles() {
+        fetch('/file/files', {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                let html = '';
+                if (Array.isArray(data) && data.length > 0) {
+                    html += `<table class="table" style="width: 75%; margin-left: 12.5%;">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Dosya Adı</th>
+                    <th scope="col">Görüntüle</th>
+                    <th scope="col">İndir</th>
+                    <th scope="col">Sil</th>
+                  </tr>
+                </thead>
+                <tbody class="table-group-divider">`;
+                    data.forEach((file, idx) => {
+                        html += `<tr>
+                  <th scope="row">${idx + 1}</th>
+                  <td>${file.fileName}</td>
+                  <td><a href="/file/getfile/${file.id}?view=true" class="btn btn-info" target="_blank">Görüntüle</a></td>
+                  <td><button class="btn btn-success" onclick="downloadFile(${file.id}, '${file.fileName}')">İndir</button></td>
+                  <td><button class="btn btn-danger" onclick="deleteFile(${file.id})">Sil</button></td>
+                </tr>`;
+                    });
+                    html += `</tbody></table>`;
+                } else {
+                    html = `<h2 style="text-align: center;">Henüz dosya yok</h2>`;
+                }
+                document.getElementById('fileTableContainer').innerHTML = html;
+            });
+    }
+
+    function downloadFile(fileId, fileName) {
+        fetch(`/file/getfile/${fileId}`, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            }
+        })
+            .then(response => {
+                if (!response.ok) throw new Error('Dosya indirilemedi');
+                return response.blob();
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(err => alert(err.message));
+    }
+
+    // Dosya yükleme işlemi
+    document.getElementById('uploadForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData();
+        const fileInput = document.getElementById('formFile');
+        if (!fileInput.files[0]) return;
+        formData.append('file', fileInput.files[0]);
+        fetch('/file/upload', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("token")
+            },
+            body: formData
+        })
+            .then(res => res.text())
+            .then(() => {
+                fetchFiles();
+                fileInput.value = '';
+            });
+    });
+
+    function deleteFile(fileId) {
+        fetch(`/file/delete/${fileId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("token")
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(text); });
+                }
+                return response.text();
+            })
+            .then(message => {
+                console.log("Silme başarılı:", message);
+                // Dosyaları yeniden yükle veya sayfayı yenile
+                fetchFiles(); // Eğer bu çalışmıyorsa aşağıya window.location.reload() yazabilirsin
+            })
+            .catch(error => {
+                console.error("Silme hatası:", error.message);
+                alert("Dosya silinemedi: " + error.message);
+            });
+    }
+
+    fetchFiles();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

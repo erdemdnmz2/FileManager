@@ -82,27 +82,55 @@ public class FileController {
     @GetMapping("/getfile/{fileId}")
     public ResponseEntity<byte[]> download(@PathVariable int fileId, Authentication authentication) {
         try {
+            String username = authentication.getName();
+            User user = userService.findByUsername(username);
+            if (user == null) {
+                return ResponseEntity.status(401).body(null);
+            }
+
             File file = fileService.findById(fileId).orElse(null);
             if (file == null) {
                 return ResponseEntity.status(404).body(null);
             }
+
+            if (file.getUser().getId() != user.getId()) {
+                return ResponseEntity.status(403).body(null);
+            }
+
             return ResponseEntity.ok()
                     .header("Content-Disposition", "attachment; filename=\"" + file.getFileName() + "\"")
                     .contentType(MediaType.parseMediaType(file.getFileType()))
                     .body(file.getFileData());
         } catch(Exception e) {
-            return ResponseEntity.status(404).body(null);
+            return ResponseEntity.status(500).body(null);
         }
     }
+
 
     @DeleteMapping("/delete/{fileId}")
     public ResponseEntity<?> deleteFile(@PathVariable int fileId, Authentication authentication) {
         try {
+            String username = authentication.getName();
+            User user = userService.findByUsername(username);
+            if (user == null) {
+                return ResponseEntity.status(401).body("Invalid user.");
+            }
+
+            File file = fileService.findById(fileId).orElse(null);
+            if (file == null) {
+                return ResponseEntity.status(404).body("File not found.");
+            }
+
+            if (file.getUser().getId() != user.getId()) {
+                return ResponseEntity.status(403).body("You are not allowed to delete this file.");
+            }
+
             fileService.deleteById(fileId);
+            return ResponseEntity.ok("File deleted successfully");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error deleting file: " + e.getMessage());
         }
-        return ResponseEntity.ok("File deleted successfully");
     }
+
 
 }
