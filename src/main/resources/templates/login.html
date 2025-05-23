@@ -8,16 +8,16 @@
 </head>
 <body style="text-align: center; padding-top: 60px;">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js"></script>
-<h2>Log-in</h2>
+<h2>Giriş Yap</h2>
 <hr style="width: 80%; margin-left: 10%;">
 <form id="loginForm" style="width: 60%; margin-left: 20%; text-align: left; padding-top: 3%; padding-bottom: 3%;">
     <div class="mb-3">
-        <label for="username" class="form-label">Username</label>
-        <input type="text" class="form-control" id="username" placeholder="Enter your username" name="username">
+        <label for="username" class="form-label">Kullanıcı adı</label>
+        <input type="text" class="form-control" id="username" placeholder="Kullanıcı adı giriniz" name="username">
     </div>
     <div class="mb-3">
-        <label for="password" class="form-label">Password</label>
-        <input type="password" class="form-control" id="password" placeholder="Password" name="password">
+        <label for="password" class="form-label">Şifre</label>
+        <input type="password" class="form-control" id="password" placeholder="Şifre giriniz" name="password">
     </div>
     <button type="submit" class="btn btn-primary">Giriş Yap</button>
     <a href="/register" class="btn btn-success">Kayıt Ol</a>
@@ -44,7 +44,7 @@
         const resultDiv = document.getElementById('result');
         if (response.ok) {
             const data = await response.json();
-            localStorage.setItem('token', data.token); // Token'ı kaydet
+            localStorage.setItem('token', data.token);
             resultDiv.innerHTML = '<span class="text-success">Giriş başarılı!</span>';
             window.location.href = '/home';
         } else {

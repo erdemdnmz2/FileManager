@@ -34,7 +34,6 @@ public class FileController {
         this.userService = userService;
     }
 
-    // buraya bir daha bak filemeta dto ayarla
     @GetMapping("/files")
     public ResponseEntity<?> getFiles(Authentication authentication) {
         int userId;

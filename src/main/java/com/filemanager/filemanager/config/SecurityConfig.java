@@ -1,4 +1,3 @@
-// src/main/java/com/filemanager/filemanager/config/SecurityConfig.java
 package com.filemanager.filemanager.config;
 
 import com.filemanager.filemanager.security.JwtAuthenticationFilter;

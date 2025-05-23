@@ -21,7 +21,6 @@
 <div id="fileTableContainer"></div>
 
 <script>
-    // LocalStorage'dan token'ı al
     function getToken() {
         return localStorage.getItem('token');
     }
@@ -88,7 +87,7 @@
             .catch(err => alert(err.message));
     }
 
-    // Dosya yükleme işlemi
+
     document.getElementById('uploadForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const formData = new FormData();
@@ -124,8 +123,8 @@
             })
             .then(message => {
                 console.log("Silme başarılı:", message);
-                // Dosyaları yeniden yükle veya sayfayı yenile
-                fetchFiles(); // Eğer bu çalışmıyorsa aşağıya window.location.reload() yazabilirsin
+
+                fetchFiles();
             })
             .catch(error => {
                 console.error("Silme hatası:", error.message);
